@@ -21,4 +21,7 @@ class User(AbstractUser):
     group_id = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='authorization_group',
                                  choices=group_choices)
 
+    def __str__(self):
+        return f'{self.username}, group {self.group_id}'
+
     USERNAME_FIELD = 'username'

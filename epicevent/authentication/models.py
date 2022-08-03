@@ -9,9 +9,9 @@ sales_group, created = Group.objects.get_or_create(name='salesmen')
 support_group, created = Group.objects.get_or_create(name='supporters')
 
 group_choices = (
-    (administration_group.id, 'Administrators'),
-    (sales_group.id, 'Salesmen'),
-    (support_group.id, 'Supporters')
+    (administration_group, 'Administrators'),
+    (sales_group, 'Salesmen'),
+    (support_group, 'Supporters')
 )
 
 

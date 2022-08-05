@@ -15,7 +15,8 @@ class UserSerializer(ModelSerializer):
     password = CharField(required=True, min_length=8, write_only=True)
 
     def create(self, validated_data):
-        user = User.objects.create_user(validated_data['username'], group_id=validated_data['authorization_group'],
+        group = Group.objects.get_by_natural_key(name=validated_data['authorization_group'])
+        user = User.objects.create_user(validated_data['username'], group_id=group,
                                         password=validated_data['password'])
         return user
 

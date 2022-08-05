@@ -10,16 +10,16 @@ class GroupSerializer(ModelSerializer):
 
 
 class UserSerializer(ModelSerializer):
-    authorization_group = GroupSerializer(many=True, required=True)
+    groups = CharField(required=True)
     username = CharField(required=True)
     password = CharField(required=True, min_length=8, write_only=True)
 
     def create(self, validated_data):
-        group = Group.objects.get_by_natural_key(name=validated_data['authorization_group'])
-        user = User.objects.create_user(validated_data['username'], group_id=group,
-                                        password=validated_data['password'])
+        user = User.objects.create_user(validated_data['username'], password=validated_data['password'])
+        user_group = Group.objects.get(name=validated_data['groups'])
+        user.groups.add(user_group.id)
         return user
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'authorization_group']
+        fields = ['id', 'username', 'password', 'groups']

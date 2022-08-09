@@ -43,7 +43,7 @@ class TestUserManagement(APITestCase):
         expected_result = 'david_test, group administrators'
         user = User.objects.all()[0]
         self.assertEqual(user.description, expected_result)
-    """
+
     def test_update(self):
         # Step 1: groups creation
         administration_group, created = Group.objects.get_or_create(name='administrators')
@@ -68,8 +68,7 @@ class TestUserManagement(APITestCase):
         print(response.data)
         self.assertEqual(response.status_code, 200)
         updated_user = get_object_or_404(User, id=user_for_update.id)
-        self.assertEqual(str(updated_user), expected_result)
-    """
+        self.assertEqual(updated_user.description, expected_result)
 
     def test_delete(self):
         administration_group, created = Group.objects.get_or_create(name='administrators')

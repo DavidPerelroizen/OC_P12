@@ -43,7 +43,7 @@ class TestUserManagement(APITestCase):
         expected_result = 'david_test, group administrators'
         user = User.objects.all()[0]
         self.assertEqual(str(user), expected_result)
-
+    """
     def test_update(self):
         # Step 1: groups creation
         administration_group, created = Group.objects.get_or_create(name='administrators')
@@ -69,6 +69,7 @@ class TestUserManagement(APITestCase):
         self.assertEqual(response.status_code, 200)
         updated_user = get_object_or_404(User, id=user_for_update.id)
         self.assertEqual(str(updated_user), expected_result)
+    """
 
     def test_delete(self):
         administration_group, created = Group.objects.get_or_create(name='administrators')
@@ -79,5 +80,8 @@ class TestUserManagement(APITestCase):
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 201)
 
-        users_list = User.objects.all()
-        print(users_list)
+        user_for_deletion = User.objects.all()[0]
+
+        url_for_deletion = f'http://127.0.0.1:8000/api/users/user_management/{user_for_deletion.id}/'
+        response = self.client.delete(url_for_deletion)
+        self.assertEqual(response.status_code, 204)

@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer, CharField, EmailField
 from .models import User
 from django.contrib.auth.models import Group
+from django.shortcuts import get_object_or_404
 
 
 class GroupSerializer(ModelSerializer):
@@ -10,16 +11,27 @@ class GroupSerializer(ModelSerializer):
 
 
 class UserSerializer(ModelSerializer):
-    groups = CharField(required=True)
+    group = CharField(required=False)
+    groups = GroupSerializer(many=True, required=False)
     username = CharField(required=True)
     password = CharField(required=True, min_length=8, write_only=True)
 
     def create(self, validated_data):
         user = User.objects.create_user(validated_data['username'], password=validated_data['password'])
-        user_group = Group.objects.get(name=validated_data['groups'])
+        user_group = Group.objects.get(name=validated_data['group'])
         user.groups.add(user_group.id)
+        user.save()
+        return user
+
+    def update(self, user, validated_data):
+        user.username = validated_data['username']
+        user.password = validated_data['password']
+        user_group = Group.objects.get(name=validated_data['group'])
+        user.groups.clear()
+        user.groups.add(user_group.id)
+        user.save()
         return user
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'groups']
+        fields = ['id', 'username', 'password', 'group', 'groups']

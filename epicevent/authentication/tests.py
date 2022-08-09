@@ -37,7 +37,7 @@ class TestUserManagement(APITestCase):
         sales_group, created = Group.objects.get_or_create(name='salesmen')
         support_group, created = Group.objects.get_or_create(name='supporters')
 
-        form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 'administrators'}
+        form_data = {'username': 'david_test', 'password': 'davidou2410', 'group': 'administrators'}
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 201)
         expected_result = 'david_test, group administrators'
@@ -51,7 +51,7 @@ class TestUserManagement(APITestCase):
         support_group, created = Group.objects.get_or_create(name='supporters')
 
         # Step 2: test user creation
-        form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 'administrators'}
+        form_data = {'username': 'david_test', 'password': 'davidou2410', 'group': 'administrators'}
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 201)
         user_for_update = User.objects.all()[0]
@@ -60,7 +60,7 @@ class TestUserManagement(APITestCase):
         # Step 3: define target URL for user update and updated data
         url_for_update = f'http://127.0.0.1:8000/api/users/user_management/{user_for_update.id}/'
         print(sales_group.id)
-        form_data_2 = {'username': 'david_test', 'password': 'davidou2410', 'groups': sales_group.id}
+        form_data_2 = {'username': 'david_test', 'password': 'davidou2410', 'group': 'salesmen'}
         expected_result = 'david_test, group salesmen'
 
         # Step 4: update the user data
@@ -75,7 +75,7 @@ class TestUserManagement(APITestCase):
         sales_group, created = Group.objects.get_or_create(name='salesmen')
         support_group, created = Group.objects.get_or_create(name='supporters')
 
-        form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 'administrators'}
+        form_data = {'username': 'david_test', 'password': 'davidou2410', 'group': 'administrators'}
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 201)
 

@@ -48,23 +48,18 @@ class TestUserManagement(APITestCase):
         administration_group, created = Group.objects.get_or_create(name='administrators')
         sales_group, created = Group.objects.get_or_create(name='salesmen')
         support_group, created = Group.objects.get_or_create(name='supporters')
-        print('admin group id ', administration_group.id)
-        print('sales group id ', sales_group.id)
-        print('support group id ', support_group.id)
 
         form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 'administrators'}
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 201)
         users = User.objects.all()
-        print(users[0].id)
 
         url = 'http://127.0.0.1:8000/api/users/user_management/3/'
-
         form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 8}
-        response = self.client.put(url, data=form_data)
-        print(response)
-        self.assertEqual(response.status_code, 200)
         expected_result = 'david_test, group salesmen'
+
+        response = self.client.put(url, data=form_data)
+        self.assertEqual(response.status_code, 200)
         updated_user = get_object_or_404(User, id=3)
         self.assertEqual(str(updated_user), expected_result)
 

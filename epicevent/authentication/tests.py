@@ -45,6 +45,32 @@ class TestUserManagement(APITestCase):
         self.assertEqual(str(user), expected_result)
 
     def test_update(self):
+        # Step 1: groups creation
+        administration_group, created = Group.objects.get_or_create(name='administrators')
+        sales_group, created = Group.objects.get_or_create(name='salesmen')
+        support_group, created = Group.objects.get_or_create(name='supporters')
+
+        # Step 2: test user creation
+        form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 'administrators'}
+        response = self.client.post(self.url, data=form_data)
+        self.assertEqual(response.status_code, 201)
+        user_for_update = User.objects.all()[0]
+        print(user_for_update.id)
+
+        # Step 3: define target URL for user update and updated data
+        url_for_update = f'http://127.0.0.1:8000/api/users/user_management/{user_for_update.id}/'
+        print(sales_group.id)
+        form_data_2 = {'username': 'david_test', 'password': 'davidou2410', 'groups': sales_group.id}
+        expected_result = 'david_test, group salesmen'
+
+        # Step 4: update the user data
+        response = self.client.put(url_for_update, data=form_data_2)
+        print(response.data)
+        self.assertEqual(response.status_code, 200)
+        updated_user = get_object_or_404(User, id=user_for_update.id)
+        self.assertEqual(str(updated_user), expected_result)
+
+    def test_delete(self):
         administration_group, created = Group.objects.get_or_create(name='administrators')
         sales_group, created = Group.objects.get_or_create(name='salesmen')
         support_group, created = Group.objects.get_or_create(name='supporters')
@@ -52,15 +78,6 @@ class TestUserManagement(APITestCase):
         form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 'administrators'}
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 201)
-        users = User.objects.all()
 
-        url = 'http://127.0.0.1:8000/api/users/user_management/3/'
-        form_data = {'username': 'david_test', 'password': 'davidou2410', 'groups': 8}
-        expected_result = 'david_test, group salesmen'
-
-        response = self.client.put(url, data=form_data)
-        self.assertEqual(response.status_code, 200)
-        updated_user = get_object_or_404(User, id=3)
-        self.assertEqual(str(updated_user), expected_result)
-
-
+        users_list = User.objects.all()
+        print(users_list)

@@ -20,8 +20,8 @@ def test_user_model():
     user_group = Group.objects.get(id=1)
     user.groups.add(user_group.id)
     expected_value = 'david_test, group administrators'
-    print(str(user))
-    assert str(user) == expected_value
+
+    assert user.description == expected_value
 
 
 class TestUserManagement(APITestCase):
@@ -42,7 +42,7 @@ class TestUserManagement(APITestCase):
         self.assertEqual(response.status_code, 201)
         expected_result = 'david_test, group administrators'
         user = User.objects.all()[0]
-        self.assertEqual(str(user), expected_result)
+        self.assertEqual(user.description, expected_result)
     """
     def test_update(self):
         # Step 1: groups creation

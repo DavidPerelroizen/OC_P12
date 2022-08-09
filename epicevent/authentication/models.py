@@ -11,5 +11,6 @@ support_group, created = Group.objects.get_or_create(name='supporters')
 
 class User(AbstractUser):
 
-    def __str__(self):
+    @property
+    def description(self):
         return f'{self.username}, group {self.groups.first().name}'

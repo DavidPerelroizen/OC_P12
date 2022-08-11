@@ -154,3 +154,21 @@ class TestClientManagement(APITestCase):
         url_for_deletion = self.url + f'{client_created.id}/'
         response = self.client.delete(url_for_deletion)
         self.assertEqual(response.status_code, 204)
+
+
+class TestEventManagement(APITestCase):
+
+    url = 'http://127.0.0.1:8000/api/controller/event_management/'
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create(self):
+        pass
+
+    def test_update(self):
+        pass
+
+    def test_delete(self):
+        pass

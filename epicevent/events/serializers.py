@@ -56,10 +56,20 @@ class ClientSerializer(ModelSerializer):
 
 
 class EventSerializer(ModelSerializer):
+    date_created = DateTimeField(required=False)
+    date_updated = DateTimeField(required=False)
+    event_status = EventStatusSerializer(required=False)
+    attendees = IntegerField(required=True)
+    event_date = DateTimeField(required=True)
+    notes = CharField(required=True)
+    client_customer = ClientSerializer(required=False)
+    support_contact = serializers.UserSerializer(required=False)
+    support_contact_name = CharField(required=True)
+
     class Meta:
         model = Event
-        fields = ['date_created', 'date_updated', 'event_status', 'attendees', 'event_date', 'notes', 'clientcustomer',
-                  'support_contact']
+        fields = ['date_created', 'date_updated', 'event_status', 'attendees', 'event_date', 'notes',
+                  'client_customer', 'support_contact', 'support_contact_name']
 
 
 class ContractSerializer(ModelSerializer):

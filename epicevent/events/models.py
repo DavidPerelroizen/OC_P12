@@ -4,7 +4,7 @@ from django.conf import settings
 # Create your models here.
 
 
-class Client(models.Model):
+class ClientCustomer(models.Model):
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     email = models.EmailField(max_length=100)
@@ -30,7 +30,7 @@ class Event(models.Model):
     attendees = models.IntegerField()
     event_date = models.DateTimeField()
     notes = models.TextField(max_length=1000)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='client_event')
+    client = models.ForeignKey(ClientCustomer, on_delete=models.CASCADE, related_name='client_event')
     support_contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='support')
 
 
@@ -40,5 +40,5 @@ class Contract(models.Model):
     amount = models.FloatField()
     contract_status = models.BooleanField(default=False)  # Contract not signed = False, Contract signed = True
     payment_due_date = models.DateTimeField()
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='client_contract')
+    client = models.ForeignKey(ClientCustomer, on_delete=models.CASCADE, related_name='client_contract')
     sales_contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sales_contract')

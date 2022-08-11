@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from .serializers import EventSerializer, EventStatusSerializer, ClientSerializer, ContractSerializer
-from .models import Client, Event, EventStatus, Contract
+from .models import ClientCustomer, Event, EventStatus, Contract
 
 # Create your views here.
 
@@ -17,7 +17,7 @@ class ClientManagement(ModelViewSet):
     serializer_class = ClientSerializer
 
     def get_queryset(self):
-        return Client.objects.all()
+        return ClientCustomer.objects.all()
 
 
 class EventManagement(ModelViewSet):

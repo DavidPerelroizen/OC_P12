@@ -59,13 +59,13 @@ class TestUserManagement(APITestCase):
 
         # Step 3: define target URL for user update and updated data
         url_for_update = f'http://127.0.0.1:8000/api/users/user_management/{user_for_update.id}/'
-        print(sales_group.id)
+
         form_data_2 = {'username': 'david_test', 'password': 'davidou2410', 'group': 'salesmen'}
         expected_result = 'david_test, group salesmen'
 
         # Step 4: update the user data
         response = self.client.put(url_for_update, data=form_data_2)
-        print(response.data)
+
         self.assertEqual(response.status_code, 200)
         updated_user = get_object_or_404(User, id=user_for_update.id)
         self.assertEqual(updated_user.description, expected_result)

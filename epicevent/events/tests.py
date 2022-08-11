@@ -116,4 +116,41 @@ class TestClientManagement(APITestCase):
         self.assertEqual(client_updated.sales_contact.username, 'david_test')
 
     def test_delete(self):
-        pass
+        # Step 1: Group creation
+        administration_group, created = Group.objects.get_or_create(name='administrators')
+        sales_group, created = Group.objects.get_or_create(name='salesmen')
+        support_group, created = Group.objects.get_or_create(name='supporters')
+
+        # Step 2: user creation
+        user = models.User.objects.create_user(username='david_test', password='davidou2410')
+        user_group = Group.objects.get(id=sales_group.id)
+        user.groups.add(user_group.id)
+        expected_value = 'david_test, group salesmen'
+
+        self.assertEqual(user.description, expected_value)
+
+        # Step 3: ClientCustomer creation
+        form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
+                     'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
+                     'sales_contact_name': 'david_test'}
+
+        response = self.client.post(self.url, data=form_data)
+
+        self.assertEqual(response.status_code, 201)
+
+        client_created = ClientCustomer.objects.all()[0]
+
+        self.assertEqual(client_created.first_name, 'first_name_test1')
+        self.assertEqual(client_created.last_name, 'last_name_test1')
+        self.assertEqual(client_created.email, 'email_test1@test.com')
+        self.assertEqual(client_created.phone, '0000000')
+        self.assertEqual(client_created.mobile, '1111111')
+        self.assertEqual(client_created.company_name, 'company_name_test1')
+        self.assertNotEqual(client_created.date_created, '')
+        self.assertEqual(client_created.sales_contact.username, 'david_test')
+
+        # Step 4: ClientCustomer deletion
+
+        url_for_deletion = self.url + f'{client_created.id}/'
+        response = self.client.delete(url_for_deletion)
+        self.assertEqual(response.status_code, 204)

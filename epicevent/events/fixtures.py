@@ -13,3 +13,4 @@ def fixture_group_and_user_creation(group_name):
     user.groups.add(user_group.id)
 
     return user
+

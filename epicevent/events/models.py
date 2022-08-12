@@ -12,8 +12,11 @@ class ClientCustomer(models.Model):
     mobile = models.CharField(max_length=20)
     company_name = models.CharField(max_length=250)
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField()
+    date_updated = models.DateTimeField(auto_now=True)
     sales_contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sales_client')
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 
 class EventStatus(models.Model):

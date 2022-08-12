@@ -136,13 +136,44 @@ class TestClientManagement(APITestCase):
 class TestEventManagement(APITestCase):
 
     url = 'http://127.0.0.1:8000/api/controller/event_management/'
+    url_client = 'http://127.0.0.1:8000/api/controller/client_management/'
+
+    form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                        'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                        'company_name': 'company_name_test1', 'sales_contact_name': 'david_test'}
 
     def test_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create(self):
-        pass
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation('supporters')
+
+        # Step 2: create ClientCustomer
+        response = self.client.post(self.url_client, data=self.form_data_client)
+        self.assertEqual(response.status_code, 201)
+        client_created = ClientCustomer.objects.all()[0]
+
+        # Step 3: create EventStatus
+        event_status = EventStatus.objects.get_or_create(name='event_status_name', status_is_active=True)[0]
+
+        # Step 4: create Event
+        form_data_event = {'event_status': event_status.id, 'attendees': 200, 'event_date': datetime.datetime.now(),
+                           'notes': 'Some notes', 'support_contact': user.id,
+                           'client_customer': client_created.id}
+        response_event = self.client.post(self.url, data=form_data_event)
+
+        self.assertEqual(response_event.status_code, 201)
+
+        event_created = Event.objects.all()[0]
+
+        self.assertEqual(event_created.event_status.id, form_data_event['event_status'])
+        self.assertEqual(event_created.attendees, form_data_event['attendees'])
+        self.assertNotEqual(event_created.event_date, '')
+        self.assertEqual(event_created.notes, form_data_event['notes'])
+        self.assertEqual(event_created.support_contact.id, form_data_event['support_contact'])
+        self.assertEqual(event_created.client_customer.id, form_data_event['client_customer'])
 
     def test_update(self):
         pass

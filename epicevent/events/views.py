@@ -25,3 +25,10 @@ class EventManagement(ModelViewSet):
 
     def get_queryset(self):
         return Event.objects.all()
+
+
+class EventStatusManagement(ModelViewSet):
+    serializer_class = EventStatusSerializer
+
+    def get_queryset(self):
+        return EventStatus.objects.all()

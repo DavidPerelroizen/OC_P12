@@ -37,8 +37,7 @@ class Event(models.Model):
     support_contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='support')
 
     def __str__(self):
-        return \
-            f'''
+        return f'''
         Event for customer {self.client_customer}, managed by {self.support_contact.description}, will take place on
         {self.event_date}, with {self.attendees} attendees.
         Notes: {self.notes}
@@ -56,3 +55,6 @@ class Contract(models.Model):
     payment_due_date = models.DateTimeField()
     client_customer = models.ForeignKey(ClientCustomer, on_delete=models.CASCADE, related_name='client_contract')
     sales_contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sales_contract')
+
+    def __str__(self):
+        return f'Contract n°{self.id}, client company {self.client_customer}, contract status {self.contract_status}'

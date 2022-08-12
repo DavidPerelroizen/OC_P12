@@ -62,8 +62,6 @@ class EventSerializer(ModelSerializer):
     attendees = IntegerField(required=True)
     event_date = DateTimeField(required=True)
     notes = CharField(required=True)
-    client_customer = ClientSerializer(required=False)
-    support_contact = serializers.UserSerializer(required=False)
     support_contact_name = CharField(required=True)
 
     class Meta:

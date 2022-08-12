@@ -9,6 +9,7 @@ from rest_framework.test import APITestCase
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 from authentication import models
+from .fixtures import fixture_group_and_user_creation
 
 # Create your tests here.
 
@@ -17,30 +18,26 @@ class TestClientManagement(APITestCase):
 
     url = 'http://127.0.0.1:8000/api/controller/client_management/'
 
+    form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
+                 'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
+                 'sales_contact_name': 'david_test'}
+
     def test_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create(self):
-        # Step 1: Group creation
-        administration_group, created = Group.objects.get_or_create(name='administrators')
-        sales_group, created = Group.objects.get_or_create(name='salesmen')
-        support_group, created = Group.objects.get_or_create(name='supporters')
 
-        # Step 2: user creation
-        user = models.User.objects.create_user(username='david_test', password='davidou2410')
-        user_group = Group.objects.get(id=sales_group.id)
-        user.groups.add(user_group.id)
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation()
+
         expected_value = 'david_test, group salesmen'
 
         self.assertEqual(user.description, expected_value)
 
-        # Step 3: ClientCustomer creation
-        form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
-                     'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
-                     'sales_contact_name': 'david_test'}
+        # Step 2: ClientCustomer creation
 
-        response = self.client.post(self.url, data=form_data)
+        response = self.client.post(self.url, data=self.form_data)
 
         self.assertEqual(response.status_code, 201)
 
@@ -56,25 +53,15 @@ class TestClientManagement(APITestCase):
         self.assertEqual(client_created.sales_contact.username, 'david_test')
 
     def test_update(self):
-        # Step 1: Group creation
-        administration_group, created = Group.objects.get_or_create(name='administrators')
-        sales_group, created = Group.objects.get_or_create(name='salesmen')
-        support_group, created = Group.objects.get_or_create(name='supporters')
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation()
 
-        # Step 2: user creation
-        user = models.User.objects.create_user(username='david_test', password='davidou2410')
-        user_group = Group.objects.get(id=sales_group.id)
-        user.groups.add(user_group.id)
         expected_value = 'david_test, group salesmen'
 
         self.assertEqual(user.description, expected_value)
 
-        # Step 3: ClientCustomer creation
-        form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
-                     'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
-                     'sales_contact_name': 'david_test'}
-
-        response = self.client.post(self.url, data=form_data)
+        # Step 2: ClientCustomer creation
+        response = self.client.post(self.url, data=self.form_data)
 
         self.assertEqual(response.status_code, 201)
 
@@ -91,7 +78,7 @@ class TestClientManagement(APITestCase):
 
         original_creation_date = client_created.date_created
 
-        # Step 4: ClientCustomer info modification
+        # Step 3: ClientCustomer info modification
 
         form_data_update = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
                             'email': 'email_test1@test.com', 'phone': '3333', 'mobile': '4444',
@@ -116,25 +103,15 @@ class TestClientManagement(APITestCase):
         self.assertEqual(client_updated.sales_contact.username, 'david_test')
 
     def test_delete(self):
-        # Step 1: Group creation
-        administration_group, created = Group.objects.get_or_create(name='administrators')
-        sales_group, created = Group.objects.get_or_create(name='salesmen')
-        support_group, created = Group.objects.get_or_create(name='supporters')
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation()
 
-        # Step 2: user creation
-        user = models.User.objects.create_user(username='david_test', password='davidou2410')
-        user_group = Group.objects.get(id=sales_group.id)
-        user.groups.add(user_group.id)
         expected_value = 'david_test, group salesmen'
 
         self.assertEqual(user.description, expected_value)
 
-        # Step 3: ClientCustomer creation
-        form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
-                     'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
-                     'sales_contact_name': 'david_test'}
-
-        response = self.client.post(self.url, data=form_data)
+        # Step 2: ClientCustomer creation
+        response = self.client.post(self.url, data=self.form_data)
 
         self.assertEqual(response.status_code, 201)
 
@@ -149,7 +126,7 @@ class TestClientManagement(APITestCase):
         self.assertNotEqual(client_created.date_created, '')
         self.assertEqual(client_created.sales_contact.username, 'david_test')
 
-        # Step 4: ClientCustomer deletion
+        # Step 3: ClientCustomer deletion
 
         url_for_deletion = self.url + f'{client_created.id}/'
         response = self.client.delete(url_for_deletion)

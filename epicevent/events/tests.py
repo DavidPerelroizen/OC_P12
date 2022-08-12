@@ -29,7 +29,7 @@ class TestClientManagement(APITestCase):
     def test_create(self):
 
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation()
+        user = fixture_group_and_user_creation('salesmen')
 
         expected_value = 'david_test, group salesmen'
 
@@ -54,7 +54,7 @@ class TestClientManagement(APITestCase):
 
     def test_update(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation()
+        user = fixture_group_and_user_creation('salesmen')
 
         expected_value = 'david_test, group salesmen'
 
@@ -104,7 +104,7 @@ class TestClientManagement(APITestCase):
 
     def test_delete(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation()
+        user = fixture_group_and_user_creation('salesmen')
 
         expected_value = 'david_test, group salesmen'
 

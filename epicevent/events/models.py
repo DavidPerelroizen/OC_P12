@@ -29,7 +29,7 @@ class EventStatus(models.Model):
 class Event(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    event_status = models.ForeignKey(EventStatus, on_delete=models.CASCADE, related_name='event_status')
+    event_status = models.ForeignKey(EventStatus, on_delete=models.CASCADE, related_name='status_event')
     attendees = models.IntegerField()
     event_date = models.DateTimeField()
     notes = models.TextField(max_length=1000)
@@ -44,6 +44,7 @@ class Event(models.Model):
         Notes: {self.notes}
         date_created : {self.date_created}
         date_updated : {self.date_updated}
+        event_status: {self.event_status}
         '''
 
 

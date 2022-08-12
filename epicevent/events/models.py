@@ -22,13 +22,13 @@ class ClientCustomer(models.Model):
 class EventStatus(models.Model):
     name = models.CharField(max_length=25)
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField()
+    date_updated = models.DateTimeField(auto_now=True)
     status_is_active = models.BooleanField(default=True)
 
 
 class Event(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField()
+    date_updated = models.DateTimeField(auto_now=True)
     event_status = models.ForeignKey(EventStatus, on_delete=models.CASCADE, related_name='event_status')
     attendees = models.IntegerField()
     event_date = models.DateTimeField()
@@ -39,7 +39,7 @@ class Event(models.Model):
 
 class Contract(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField()
+    date_updated = models.DateTimeField(auto_now=True)
     amount = models.FloatField()
     contract_status = models.BooleanField(default=False)  # Contract not signed = False, Contract signed = True
     payment_due_date = models.DateTimeField()

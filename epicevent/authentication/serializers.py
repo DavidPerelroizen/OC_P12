@@ -1,5 +1,5 @@
-from rest_framework.serializers import ModelSerializer, CharField, EmailField
-from .models import User
+from rest_framework.serializers import ModelSerializer, CharField, EmailField, ValidationError
+from .models import User, groups_names_list
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 
@@ -35,3 +35,10 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'password', 'group', 'groups']
+
+    def validate_group(self, value):
+        if value['group'] not in groups_names_list:
+            raise ValidationError(f'Group name should correspond to one from the following list: {groups_names_list}')
+
+
+

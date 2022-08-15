@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer, CharField, EmailField, V
 from .models import User, groups_names_list
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 
 
 class GroupSerializer(ModelSerializer):
@@ -15,6 +16,11 @@ class UserSerializer(ModelSerializer):
     groups = GroupSerializer(many=True, required=False)
     username = CharField(required=True)
     password = CharField(required=True, min_length=8, write_only=True)
+
+    def validate_group(self, group_name):
+        if group_name not in groups_names_list:
+            raise Exception('Incorrect group name')
+        return group_name
 
     def create(self, validated_data):
         user = User.objects.create_user(validated_data['username'], password=validated_data['password'])
@@ -36,9 +42,7 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = ['id', 'username', 'password', 'group', 'groups']
 
-    def validate_group(self, value):
-        if value['group'] not in groups_names_list:
-            raise ValidationError(f'Group name should correspond to one from the following list: {groups_names_list}')
+
 
 
 

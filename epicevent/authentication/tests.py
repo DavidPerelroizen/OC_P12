@@ -84,3 +84,13 @@ class TestUserManagement(APITestCase):
         url_for_deletion = f'http://127.0.0.1:8000/api/users/user_management/{user_for_deletion.id}/'
         response = self.client.delete(url_for_deletion)
         self.assertEqual(response.status_code, 204)
+
+    def test_create_user_with_wrong_group_name(self):
+        administration_group, created = Group.objects.get_or_create(name='administrators')
+        sales_group, created = Group.objects.get_or_create(name='salesmen')
+        support_group, created = Group.objects.get_or_create(name='supporters')
+
+        form_data = {'username': 'david_test', 'password': 'davidou2410', 'group': 'administrative'}
+        with pytest.raises(Exception):
+            response = self.client.post(self.url, data=form_data)
+

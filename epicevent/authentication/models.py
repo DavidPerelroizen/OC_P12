@@ -12,6 +12,8 @@ administration_group, created = Group.objects.get_or_create(name='administrators
 sales_group, created = Group.objects.get_or_create(name='salesmen')
 support_group, created = Group.objects.get_or_create(name='supporters')
 
+groups_names_list = [administration_group.name, sales_group.name, support_group.name]
+
 
 class User(AbstractUser):
 

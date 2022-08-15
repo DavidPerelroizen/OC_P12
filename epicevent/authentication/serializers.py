@@ -19,7 +19,7 @@ class UserSerializer(ModelSerializer):
 
     def validate_group(self, group_name):
         if group_name not in groups_names_list:
-            raise Exception('Incorrect group name')
+            raise ValidationError('Incorrect group name')
         return group_name
 
     def create(self, validated_data):

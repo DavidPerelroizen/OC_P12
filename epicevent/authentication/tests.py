@@ -6,6 +6,7 @@ from django.test import Client
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
+from rest_framework.serializers import ValidationError
 
 # Create your tests here.
 
@@ -91,6 +92,6 @@ class TestUserManagement(APITestCase):
         support_group, created = Group.objects.get_or_create(name='supporters')
 
         form_data = {'username': 'david_test', 'password': 'davidou2410', 'group': 'administrative'}
-        with pytest.raises(Exception):
-            response = self.client.post(self.url, data=form_data)
+        response = self.client.post(self.url, data=form_data)
+        self.assertEqual(response.status_code, 400)
 

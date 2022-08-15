@@ -188,7 +188,8 @@ class TestEventManagement(APITestCase):
         event_status = EventStatus.objects.get_or_create(name='event_status_name', status_is_active=True)[0]
 
         # Step 4: create Event
-        form_data_event = {'event_status': event_status.id, 'attendees': 200, 'event_date': datetime.datetime.now(),
+        form_data_event = {'event_status': event_status.id, 'attendees': 200,
+                           'event_date': datetime.datetime.now(tz=datetime.timezone.utc),
                            'notes': 'Some notes', 'support_contact': user.id,
                            'client_customer': client_created.id}
         response_event = self.client.post(self.url, data=form_data_event)
@@ -205,20 +206,23 @@ class TestEventManagement(APITestCase):
         self.assertEqual(event_created.client_customer.id, form_data_event['client_customer'])
 
         # Step 5: update Event
-        form_data_update = {'event_status': event_status.id, 'attendees': 400, 'event_date': '2022-09-04T18:37:00Z',
+        form_data_update = {'event_status': event_status.id, 'attendees': 400,
+                            'event_date': datetime.datetime.now(tz=datetime.timezone.utc),
                             'notes': 'Some more notes', 'support_contact': user.id,
                             'client_customer': client_created.id}
         url_for_update = self.url + f'{event_created.id}/'
 
         response_update = self.client.put(url_for_update, data=form_data_update)
 
+        event_updated = Event.objects.all()[0]
+
         self.assertEqual(response_update.status_code, 200)
-        self.assertEqual(event_created.event_status.id, form_data_update['event_status'])
-        self.assertEqual(event_created.attendees, form_data_update['attendees'])
-        self.assertEqual(event_created.event_date, form_data_update['event_date'])
-        self.assertEqual(event_created.notes, form_data_update['notes'])
-        self.assertEqual(event_created.support_contact.id, form_data_update['support_contact'])
-        self.assertEqual(event_created.client_customer.id, form_data_update['client_customer'])
+        self.assertEqual(event_updated.event_status.id, form_data_update['event_status'])
+        self.assertEqual(event_updated.attendees, form_data_update['attendees'])
+        self.assertEqual(event_updated.event_date, form_data_update['event_date'])
+        self.assertEqual(event_updated.notes, form_data_update['notes'])
+        self.assertEqual(event_updated.support_contact.id, form_data_update['support_contact'])
+        self.assertEqual(event_updated.client_customer.id, form_data_update['client_customer'])
 
     def test_delete(self):
         # Step 1: groups and user creation
@@ -233,7 +237,8 @@ class TestEventManagement(APITestCase):
         event_status = EventStatus.objects.get_or_create(name='event_status_name', status_is_active=True)[0]
 
         # Step 4: create Event
-        form_data_event = {'event_status': event_status.id, 'attendees': 200, 'event_date': datetime.datetime.now(),
+        form_data_event = {'event_status': event_status.id, 'attendees': 200,
+                           'event_date': datetime.datetime.now(tz=datetime.timezone.utc),
                            'notes': 'Some notes', 'support_contact': user.id,
                            'client_customer': client_created.id}
         response_event = self.client.post(self.url, data=form_data_event)
@@ -287,15 +292,52 @@ class TestContractManagement(APITestCase):
 
         self.assertEqual(response_contract.status_code, 201)
         self.assertEqual(contract_created.amount, form_data_contract['amount'])
-        print(contract_created.payment_due_date)
-        print(form_data_contract['payment_due_date'])
         self.assertEqual(contract_created.payment_due_date, form_data_contract['payment_due_date'])
         self.assertEqual(contract_created.sales_contact.id, form_data_contract['sales_contact'])
         self.assertEqual(contract_created.client_customer.id, form_data_contract['client_customer'])
         self.assertEqual(contract_created.contract_status, False)
 
     def test_update(self):
-        pass
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation('supporters')
+
+        # Step 2: create ClientCustomer
+        response = self.client.post(self.url_client, data=self.form_data_client)
+        self.assertEqual(response.status_code, 201)
+        client_created = ClientCustomer.objects.all()[0]
+
+        # Step 3: create Contract
+        form_data_contract = {'amount': 1000,
+                              'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
+                              'client_customer': client_created.id, 'sales_contact': user.id}
+        response_contract = self.client.post(self.url_contract, data=form_data_contract)
+
+        contract_created = Contract.objects.all()[0]
+
+        self.assertEqual(response_contract.status_code, 201)
+        self.assertEqual(contract_created.amount, form_data_contract['amount'])
+        self.assertEqual(contract_created.payment_due_date, form_data_contract['payment_due_date'])
+        self.assertEqual(contract_created.sales_contact.id, form_data_contract['sales_contact'])
+        self.assertEqual(contract_created.client_customer.id, form_data_contract['client_customer'])
+        self.assertEqual(contract_created.contract_status, False)
+
+        # Step 4: update Contract
+        url_contract_update = self.url_contract + f'{contract_created.id}/'
+        form_data_contract_update = {'amount': 2000, 'contract_status': True,
+                                     'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
+                                     'client_customer': client_created.id, 'sales_contact': user.id}
+
+        response_contract_update = self.client.put(url_contract_update, data=form_data_contract_update)
+
+        contract_updated = Contract.objects.all()[0]
+
+        self.assertEqual(response_contract_update.status_code, 200)
+        self.assertEqual(contract_created.id, contract_updated.id)
+        self.assertEqual(contract_updated.amount, form_data_contract_update['amount'])
+        self.assertEqual(contract_updated.payment_due_date, form_data_contract_update['payment_due_date'])
+        self.assertEqual(contract_updated.sales_contact.id, form_data_contract_update['sales_contact'])
+        self.assertEqual(contract_updated.client_customer.id, form_data_contract_update['client_customer'])
+        self.assertEqual(contract_updated.contract_status, True)
 
     def test_delete(self):
         # Step 1: groups and user creation

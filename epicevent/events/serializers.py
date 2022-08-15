@@ -1,6 +1,6 @@
 import datetime
 
-from rest_framework.serializers import ModelSerializer, CharField, EmailField, IntegerField, DateTimeField
+from rest_framework.serializers import ModelSerializer, CharField, EmailField, IntegerField, DateTimeField, FloatField
 from .models import ClientCustomer, Event, EventStatus, Contract
 from authentication import serializers, models
 
@@ -69,7 +69,13 @@ class EventSerializer(ModelSerializer):
 
 
 class ContractSerializer(ModelSerializer):
+    date_created = DateTimeField(required=False)
+    date_updated = DateTimeField(required=False)
+    amount = FloatField(required=True)
+    contract_status = CharField(required=False)  # Contract not signed = False, Contract signed = True
+    payment_due_date = DateTimeField(required=True)
+
     class Meta:
         model = Contract
-        fields = ['date_created', 'date_updated', 'amount', 'contract_status', 'payment_due_date', 'clientcustomer',
+        fields = ['date_created', 'date_updated', 'amount', 'contract_status', 'payment_due_date', 'client_customer',
                   'sales_contact']

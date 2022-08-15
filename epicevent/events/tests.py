@@ -254,3 +254,73 @@ class TestEventManagement(APITestCase):
         response = self.client.delete(url_for_deletion)
         self.assertEqual(response.status_code, 204)
 
+
+class TestContractManagement(APITestCase):
+
+    url_client = 'http://127.0.0.1:8000/api/controller/client_management/'
+    url_contract = 'http://127.0.0.1:8000/api/controller/contract_management/'
+
+    form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                        'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                        'company_name': 'company_name_test1', 'sales_contact_name': 'david_test'}
+
+    def test_get(self):
+        response = self.client.get(self.url_contract)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create(self):
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation('supporters')
+
+        # Step 2: create ClientCustomer
+        response = self.client.post(self.url_client, data=self.form_data_client)
+        self.assertEqual(response.status_code, 201)
+        client_created = ClientCustomer.objects.all()[0]
+
+        # Step 3: create Contract
+        form_data_contract = {'amount': 1000,
+                              'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
+                              'client_customer': client_created.id, 'sales_contact': user.id}
+        response_contract = self.client.post(self.url_contract, data=form_data_contract)
+
+        contract_created = Contract.objects.all()[0]
+
+        self.assertEqual(response_contract.status_code, 201)
+        self.assertEqual(contract_created.amount, form_data_contract['amount'])
+        print(contract_created.payment_due_date)
+        print(form_data_contract['payment_due_date'])
+        self.assertEqual(contract_created.payment_due_date, form_data_contract['payment_due_date'])
+        self.assertEqual(contract_created.sales_contact.id, form_data_contract['sales_contact'])
+        self.assertEqual(contract_created.client_customer.id, form_data_contract['client_customer'])
+        self.assertEqual(contract_created.contract_status, False)
+
+    def test_update(self):
+        pass
+
+    def test_delete(self):
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation('supporters')
+
+        # Step 2: create ClientCustomer
+        response = self.client.post(self.url_client, data=self.form_data_client)
+        self.assertEqual(response.status_code, 201)
+        client_created = ClientCustomer.objects.all()[0]
+
+        # Step 3: create Contract
+        form_data_contract = {'amount': 1000, 'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
+                              'client_customer': client_created.id, 'sales_contact': user.id}
+        response_contract = self.client.post(self.url_contract, data=form_data_contract)
+
+        contract_created = Contract.objects.all()[0]
+
+        self.assertEqual(response_contract.status_code, 201)
+        self.assertEqual(contract_created.amount, form_data_contract['amount'])
+        self.assertEqual(contract_created.payment_due_date, form_data_contract['payment_due_date'])
+        self.assertEqual(contract_created.sales_contact.id, form_data_contract['sales_contact'])
+        self.assertEqual(contract_created.client_customer.id, form_data_contract['client_customer'])
+
+        # Step 4: delete Contract
+        url_for_deletion = self.url_contract + f'{contract_created.id}/'
+        response = self.client.delete(url_for_deletion)
+        self.assertEqual(response.status_code, 204)
+

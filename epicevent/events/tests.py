@@ -132,6 +132,21 @@ class TestClientManagement(APITestCase):
         response = self.client.delete(url_for_deletion)
         self.assertEqual(response.status_code, 204)
 
+    def test_create_client_with_wrong_data(self):
+        form_wrong_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                           'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                           'company_name': 'company_name_test1', 'sales_contact_name': 'david_test'}
+
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation('administrators')
+
+        # Step 2: ClientCustomer creation
+
+        response = self.client.post(self.url, data=form_wrong_data)
+        print(response.data)
+
+        self.assertEqual(response.status_code, 400)
+
 
 class TestEventManagement(APITestCase):
 

@@ -1,6 +1,7 @@
 import datetime
 
-from rest_framework.serializers import ModelSerializer, CharField, EmailField, IntegerField, DateTimeField, FloatField
+from rest_framework.serializers import ModelSerializer, CharField, EmailField, IntegerField, DateTimeField, FloatField,\
+    ValidationError
 from .models import ClientCustomer, Event, EventStatus, Contract
 from authentication import serializers, models
 
@@ -22,6 +23,15 @@ class ClientSerializer(ModelSerializer):
     date_updated = DateTimeField(required=False)
     sales_contact = serializers.UserSerializer(required=False)
     sales_contact_name = CharField(required=False)
+
+    def validate_sales_contact_name(self, sales_contact_name):
+        try:
+            test_sales_contact_name = models.User.objects.get(username=sales_contact_name)
+            if test_sales_contact_name.groups.name != 'salesmen':
+                raise ValidationError('The selected sales contact does not belong to the salesmen group')
+            return sales_contact_name
+        except Exception:
+            raise ValidationError('The selected sales contact does not exist')
 
     def create(self, validated_data):
         client_customer = ClientCustomer()

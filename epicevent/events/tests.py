@@ -148,7 +148,6 @@ class TestClientManagement(APITestCase):
         # Step 2: ClientCustomer creation
 
         response = self.client.post(self.url, data=form_wrong_data)
-        print(response.data)
 
         self.assertEqual(response.status_code, 400)
 
@@ -470,5 +469,5 @@ class TestContractManagement(APITestCase):
                               'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
                               'client_customer': 1000, 'sales_contact': user_sales.id}
         response_contract = self.client.post(self.url_contract, data=form_data_contract)
-        print(response_contract.data)
+
         self.assertEqual(response_contract.status_code, 400)

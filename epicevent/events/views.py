@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 from .serializers import EventSerializer, EventStatusSerializer, ClientSerializer, ContractSerializer
 from .models import ClientCustomer, Event, EventStatus, Contract
 from .permissions import CanUpdateDeleteContracts, CanCreateReadContracts, CanCreateReadClient, CanUpdateDeleteClient,\
-    CanCRUDEventStatus
+    CanCRUDEventStatus, CanCreateReadEvent, CanUpdateDeleteEvent
 
 # Create your views here.
 
@@ -26,6 +26,7 @@ class ClientManagement(ModelViewSet):
 
 class EventManagement(ModelViewSet):
     serializer_class = EventSerializer
+    permission_classes = [CanCreateReadEvent, CanUpdateDeleteEvent]
 
     def get_queryset(self):
         return Event.objects.all()

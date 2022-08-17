@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group
 from .permissions import CanManageUserCreation
+from events.permissions import CanUpdateDeleteContracts, CanCreateReadContracts
 
 # Create your models here.
 
@@ -14,9 +15,6 @@ sales_group, created = Group.objects.get_or_create(name='salesmen')
 support_group, created = Group.objects.get_or_create(name='supporters')
 
 groups_names_list = [administration_group.name, sales_group.name, support_group.name]
-
-# Groups permissions set-up
-administration_group.permissions.add(CanManageUserCreation)
 
 
 class User(AbstractUser):

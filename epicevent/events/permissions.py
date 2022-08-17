@@ -56,3 +56,24 @@ class CanUpdateDeleteClient(BasePermission):
         else:
             return False
 
+
+class CanCRUDEventStatus(BasePermission):
+
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            if request.user.groups.first().name == 'administrators':
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_authenticated:
+            if request.user.groups.first().name == 'administrators':
+                return True
+            else:
+                return False
+        else:
+            return False
+

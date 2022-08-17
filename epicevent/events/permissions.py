@@ -4,7 +4,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 class CanCreateReadContracts(BasePermission):
 
     def has_permission(self, request, view):
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and request.user.groups.first().name in ['salesmen', 'administrators']:
             if request.method in SAFE_METHODS:
                 return True
             elif request.user.groups.first().name == 'salesmen' and request.method == 'POST':

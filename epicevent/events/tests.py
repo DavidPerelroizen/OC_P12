@@ -18,10 +18,6 @@ class TestClientManagement(APITestCase):
 
     url = 'http://127.0.0.1:8000/api/controller/client_management/'
 
-    form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
-                 'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
-                 'sales_contact_name': 'david_test'}
-
     def test_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -29,15 +25,18 @@ class TestClientManagement(APITestCase):
     def test_create(self):
 
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('salesmen')
+        user = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
 
         expected_value = 'david_test, group salesmen'
 
         self.assertEqual(user.description, expected_value)
 
         # Step 2: ClientCustomer creation
+        form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
+                     'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
+                     'sales_contact': user.id}
 
-        response = self.client.post(self.url, data=self.form_data)
+        response = self.client.post(self.url, data=form_data)
 
         self.assertEqual(response.status_code, 201)
 
@@ -54,14 +53,17 @@ class TestClientManagement(APITestCase):
 
     def test_update(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('salesmen')
+        user = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
 
         expected_value = 'david_test, group salesmen'
 
         self.assertEqual(user.description, expected_value)
 
         # Step 2: ClientCustomer creation
-        response = self.client.post(self.url, data=self.form_data)
+        form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1', 'email': 'email_test1@test.com',
+                     'phone': '0000000', 'mobile': '1111111', 'company_name': 'company_name_test1',
+                     'sales_contact': user.id}
+        response = self.client.post(self.url, data=form_data)
 
         self.assertEqual(response.status_code, 201)
 
@@ -82,7 +84,7 @@ class TestClientManagement(APITestCase):
 
         form_data_update = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
                             'email': 'email_test1@test.com', 'phone': '3333', 'mobile': '4444',
-                            'company_name': 'company_name_test1', 'sales_contact_name': 'david_test'}
+                            'company_name': 'company_name_test1', 'sales_contact': user.id}
 
         url_for_update = self.url + f'{client_created.id}/'
 
@@ -104,14 +106,17 @@ class TestClientManagement(APITestCase):
 
     def test_delete(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('salesmen')
+        user = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
 
         expected_value = 'david_test, group salesmen'
 
         self.assertEqual(user.description, expected_value)
 
         # Step 2: ClientCustomer creation
-        response = self.client.post(self.url, data=self.form_data)
+        form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '3333', 'mobile': '4444',
+                            'company_name': 'company_name_test1', 'sales_contact': user.id}
+        response = self.client.post(self.url, data=form_data)
 
         self.assertEqual(response.status_code, 201)
 
@@ -120,8 +125,8 @@ class TestClientManagement(APITestCase):
         self.assertEqual(client_created.first_name, 'first_name_test1')
         self.assertEqual(client_created.last_name, 'last_name_test1')
         self.assertEqual(client_created.email, 'email_test1@test.com')
-        self.assertEqual(client_created.phone, '0000000')
-        self.assertEqual(client_created.mobile, '1111111')
+        self.assertEqual(client_created.phone, '3333')
+        self.assertEqual(client_created.mobile, '4444')
         self.assertEqual(client_created.company_name, 'company_name_test1')
         self.assertNotEqual(client_created.date_created, '')
         self.assertEqual(client_created.sales_contact.username, 'david_test')
@@ -133,12 +138,12 @@ class TestClientManagement(APITestCase):
         self.assertEqual(response.status_code, 204)
 
     def test_create_client_with_wrong_data(self):
+        # Step 1: groups and user creation
+        user = fixture_group_and_user_creation('administrators', 'david_test', 'password1')
+
         form_wrong_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
-                           'company_name': 'company_name_test1', 'sales_contact_name': 'david_test'}
-
-        # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('administrators')
+                           'company_name': 'company_name_test1', 'sales_contact': user.id}
 
         # Step 2: ClientCustomer creation
 
@@ -163,7 +168,8 @@ class TestEventManagement(APITestCase):
 
     def test_create(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('supporters')
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
+        user_support = fixture_group_and_user_creation('supporters', 'david_test_event', 'password2')
 
         # Step 2: create ClientCustomer
         response = self.client.post(self.url_client, data=self.form_data_client)
@@ -175,7 +181,7 @@ class TestEventManagement(APITestCase):
 
         # Step 4: create Event
         form_data_event = {'event_status': event_status.id, 'attendees': 200, 'event_date': datetime.datetime.now(),
-                           'notes': 'Some notes', 'support_contact': user.id,
+                           'notes': 'Some notes', 'support_contact': user_support.id,
                            'client_customer': client_created.id}
         response_event = self.client.post(self.url, data=form_data_event)
 
@@ -192,7 +198,8 @@ class TestEventManagement(APITestCase):
 
     def test_update(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('supporters')
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
+        user_support = fixture_group_and_user_creation('supporters', 'david_test_event', 'password2')
 
         # Step 2: create ClientCustomer
         response = self.client.post(self.url_client, data=self.form_data_client)
@@ -205,7 +212,7 @@ class TestEventManagement(APITestCase):
         # Step 4: create Event
         form_data_event = {'event_status': event_status.id, 'attendees': 200,
                            'event_date': datetime.datetime.now(tz=datetime.timezone.utc),
-                           'notes': 'Some notes', 'support_contact': user.id,
+                           'notes': 'Some notes', 'support_contact': user_support.id,
                            'client_customer': client_created.id}
         response_event = self.client.post(self.url, data=form_data_event)
 
@@ -223,7 +230,7 @@ class TestEventManagement(APITestCase):
         # Step 5: update Event
         form_data_update = {'event_status': event_status.id, 'attendees': 400,
                             'event_date': datetime.datetime.now(tz=datetime.timezone.utc),
-                            'notes': 'Some more notes', 'support_contact': user.id,
+                            'notes': 'Some more notes', 'support_contact': user_support.id,
                             'client_customer': client_created.id}
         url_for_update = self.url + f'{event_created.id}/'
 
@@ -241,7 +248,8 @@ class TestEventManagement(APITestCase):
 
     def test_delete(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('supporters')
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
+        user_support = fixture_group_and_user_creation('supporters', 'david_test_event', 'password2')
 
         # Step 2: create ClientCustomer
         response = self.client.post(self.url_client, data=self.form_data_client)
@@ -254,7 +262,7 @@ class TestEventManagement(APITestCase):
         # Step 4: create Event
         form_data_event = {'event_status': event_status.id, 'attendees': 200,
                            'event_date': datetime.datetime.now(tz=datetime.timezone.utc),
-                           'notes': 'Some notes', 'support_contact': user.id,
+                           'notes': 'Some notes', 'support_contact': user_support.id,
                            'client_customer': client_created.id}
         response_event = self.client.post(self.url, data=form_data_event)
 
@@ -273,6 +281,37 @@ class TestEventManagement(APITestCase):
         url_for_deletion = self.url + f'{event_created.id}/'
         response = self.client.delete(url_for_deletion)
         self.assertEqual(response.status_code, 204)
+
+    def test_create_event_with_wrong_support_name(self):
+        # Step 1: groups and user creation
+        administration_group, created = Group.objects.get_or_create(name='administrators')
+        sales_group, created = Group.objects.get_or_create(name='salesmen')
+        support_group, created = Group.objects.get_or_create(name='supporters')
+
+        user_sales = models.User.objects.create_user(username='david_test', password='davidou241')
+        user_support = models.User.objects.create_user(username='david_test_support', password='davidou2410')
+
+        user_group_sales = Group.objects.get(name='salesmen')
+        user_sales.groups.add(user_group_sales.id)
+        user_group_support = Group.objects.get(name='supporters')
+        user_support.groups.add(user_group_support.id)
+
+        # Step 2: create ClientCustomer
+        response = self.client.post(self.url_client, data=self.form_data_client)
+        print(response.data)
+        self.assertEqual(response.status_code, 201)
+        client_created = ClientCustomer.objects.all()[0]
+
+        # Step 3: create EventStatus
+        event_status = EventStatus.objects.get_or_create(name='event_status_name', status_is_active=True)[0]
+
+        # Step 4: create Event
+        form_data_event = {'event_status': event_status.id, 'attendees': 200, 'event_date': datetime.datetime.now(),
+                           'notes': 'Some notes', 'support_contact': user_support.id,
+                           'client_customer': client_created.id}
+        response_event = self.client.post(self.url, data=form_data_event)
+        self.assertEqual(response_event.status_code, 400)
+        print(response_event.data)
 
 
 class TestContractManagement(APITestCase):

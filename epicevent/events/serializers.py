@@ -47,13 +47,10 @@ class EventSerializer(ModelSerializer):
                   'client_customer', 'support_contact']
 
     def validate_support_contact(self, support_contact):
-        try:
-            test_support_contact = models.User.objects.get(id=support_contact)
-            if test_support_contact.description != f'{test_support_contact.username}, group supporters':
-                raise ValidationError('The selected sales contact does not belong to the supporters group')
-            return support_contact
-        except Exception:
-            raise ValidationError('The selected support contact does not exist')
+        test_support_contact = models.User.objects.get(id=support_contact.id)
+        if test_support_contact.description != f'{test_support_contact.username}, group supporters':
+            raise ValidationError('The selected sales contact does not belong to the supporters group')
+        return support_contact
 
 
 class ContractSerializer(ModelSerializer):

@@ -158,10 +158,6 @@ class TestEventManagement(APITestCase):
     url = 'http://127.0.0.1:8000/api/controller/event_management/'
     url_client = 'http://127.0.0.1:8000/api/controller/client_management/'
 
-    form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
-                        'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
-                        'company_name': 'company_name_test1', 'sales_contact_name': 'david_test'}
-
     def test_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -171,15 +167,19 @@ class TestEventManagement(APITestCase):
         user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
         user_support = fixture_group_and_user_creation('supporters', 'david_test_event', 'password2')
 
-        # Step 2: create ClientCustomer
-        response = self.client.post(self.url_client, data=self.form_data_client)
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+
+        # Step 1: create ClientCustomer
+        response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
         client_created = ClientCustomer.objects.all()[0]
 
-        # Step 3: create EventStatus
+        # Step 2: create EventStatus
         event_status = EventStatus.objects.get_or_create(name='event_status_name', status_is_active=True)[0]
 
-        # Step 4: create Event
+        # Step 3: create Event
         form_data_event = {'event_status': event_status.id, 'attendees': 200, 'event_date': datetime.datetime.now(),
                            'notes': 'Some notes', 'support_contact': user_support.id,
                            'client_customer': client_created.id}
@@ -202,7 +202,10 @@ class TestEventManagement(APITestCase):
         user_support = fixture_group_and_user_creation('supporters', 'david_test_event', 'password2')
 
         # Step 2: create ClientCustomer
-        response = self.client.post(self.url_client, data=self.form_data_client)
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
         client_created = ClientCustomer.objects.all()[0]
 
@@ -252,7 +255,10 @@ class TestEventManagement(APITestCase):
         user_support = fixture_group_and_user_creation('supporters', 'david_test_event', 'password2')
 
         # Step 2: create ClientCustomer
-        response = self.client.post(self.url_client, data=self.form_data_client)
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
         client_created = ClientCustomer.objects.all()[0]
 
@@ -293,12 +299,14 @@ class TestEventManagement(APITestCase):
 
         user_group_sales = Group.objects.get(name='salesmen')
         user_sales.groups.add(user_group_sales.id)
-        user_group_support = Group.objects.get(name='supporters')
+        user_group_support = Group.objects.get(name='administrators')
         user_support.groups.add(user_group_support.id)
 
         # Step 2: create ClientCustomer
-        response = self.client.post(self.url_client, data=self.form_data_client)
-        print(response.data)
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
         client_created = ClientCustomer.objects.all()[0]
 

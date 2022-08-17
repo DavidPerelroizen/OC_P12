@@ -319,7 +319,6 @@ class TestEventManagement(APITestCase):
                            'client_customer': client_created.id}
         response_event = self.client.post(self.url, data=form_data_event)
         self.assertEqual(response_event.status_code, 400)
-        print(response_event.data)
 
 
 class TestContractManagement(APITestCase):
@@ -327,27 +326,26 @@ class TestContractManagement(APITestCase):
     url_client = 'http://127.0.0.1:8000/api/controller/client_management/'
     url_contract = 'http://127.0.0.1:8000/api/controller/contract_management/'
 
-    form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
-                        'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
-                        'company_name': 'company_name_test1', 'sales_contact_name': 'david_test'}
-
     def test_get(self):
         response = self.client.get(self.url_contract)
         self.assertEqual(response.status_code, 200)
 
     def test_create(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('supporters')
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
 
         # Step 2: create ClientCustomer
-        response = self.client.post(self.url_client, data=self.form_data_client)
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
         client_created = ClientCustomer.objects.all()[0]
 
         # Step 3: create Contract
         form_data_contract = {'amount': 1000,
                               'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
-                              'client_customer': client_created.id, 'sales_contact': user.id}
+                              'client_customer': client_created.id, 'sales_contact': user_sales.id}
         response_contract = self.client.post(self.url_contract, data=form_data_contract)
 
         contract_created = Contract.objects.all()[0]
@@ -361,17 +359,20 @@ class TestContractManagement(APITestCase):
 
     def test_update(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('supporters')
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
 
         # Step 2: create ClientCustomer
-        response = self.client.post(self.url_client, data=self.form_data_client)
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
         client_created = ClientCustomer.objects.all()[0]
 
         # Step 3: create Contract
         form_data_contract = {'amount': 1000,
                               'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
-                              'client_customer': client_created.id, 'sales_contact': user.id}
+                              'client_customer': client_created.id, 'sales_contact': user_sales.id}
         response_contract = self.client.post(self.url_contract, data=form_data_contract)
 
         contract_created = Contract.objects.all()[0]
@@ -387,7 +388,7 @@ class TestContractManagement(APITestCase):
         url_contract_update = self.url_contract + f'{contract_created.id}/'
         form_data_contract_update = {'amount': 2000, 'contract_status': True,
                                      'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
-                                     'client_customer': client_created.id, 'sales_contact': user.id}
+                                     'client_customer': client_created.id, 'sales_contact': user_sales.id}
 
         response_contract_update = self.client.put(url_contract_update, data=form_data_contract_update)
 
@@ -403,16 +404,19 @@ class TestContractManagement(APITestCase):
 
     def test_delete(self):
         # Step 1: groups and user creation
-        user = fixture_group_and_user_creation('supporters')
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
 
         # Step 2: create ClientCustomer
-        response = self.client.post(self.url_client, data=self.form_data_client)
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
         client_created = ClientCustomer.objects.all()[0]
 
         # Step 3: create Contract
         form_data_contract = {'amount': 1000, 'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
-                              'client_customer': client_created.id, 'sales_contact': user.id}
+                              'client_customer': client_created.id, 'sales_contact': user_sales.id}
         response_contract = self.client.post(self.url_contract, data=form_data_contract)
 
         contract_created = Contract.objects.all()[0]
@@ -428,3 +432,43 @@ class TestContractManagement(APITestCase):
         response = self.client.delete(url_for_deletion)
         self.assertEqual(response.status_code, 204)
 
+    def test_create_contract_with_wrong_sales_contact(self):
+        # Step 1: groups and user creation
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
+        user_administrator = fixture_group_and_user_creation('administrators', 'david_admin', '11111111')
+
+        # Step 2: create ClientCustomer
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
+        self.assertEqual(response.status_code, 201)
+        client_created = ClientCustomer.objects.all()[0]
+
+        # Step 3: create Contract
+        form_data_contract = {'amount': 1000,
+                              'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
+                              'client_customer': client_created.id, 'sales_contact': user_administrator.id}
+        response_contract = self.client.post(self.url_contract, data=form_data_contract)
+
+        self.assertEqual(response_contract.status_code, 400)
+
+    def test_create_contract_with_wrong_client_customer(self):
+        # Step 1: groups and user creation
+        user_sales = fixture_group_and_user_creation('salesmen', 'david_test', 'password1')
+
+        # Step 2: create ClientCustomer
+        form_data_client = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
+                            'email': 'email_test1@test.com', 'phone': '0000000', 'mobile': '1111111',
+                            'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
+        response = self.client.post(self.url_client, data=form_data_client)
+        self.assertEqual(response.status_code, 201)
+        client_created = ClientCustomer.objects.all()[0]
+
+        # Step 3: create Contract
+        form_data_contract = {'amount': 1000,
+                              'payment_due_date': datetime.datetime.now(tz=datetime.timezone.utc),
+                              'client_customer': 1000, 'sales_contact': user_sales.id}
+        response_contract = self.client.post(self.url_contract, data=form_data_contract)
+        print(response_contract.data)
+        self.assertEqual(response_contract.status_code, 400)

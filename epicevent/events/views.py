@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from .serializers import EventSerializer, EventStatusSerializer, ClientSerializer, ContractSerializer
 from .models import ClientCustomer, Event, EventStatus, Contract
-from .permissions import CanUpdateDeleteContracts, CanCreateReadContracts
+from .permissions import CanUpdateDeleteContracts, CanCreateReadContracts, CanCreateReadClient, CanUpdateDeleteClient
 
 # Create your views here.
 
@@ -17,6 +17,7 @@ class ContractManagement(ModelViewSet):
 
 class ClientManagement(ModelViewSet):
     serializer_class = ClientSerializer
+    permission_classes = [CanCreateReadClient, CanUpdateDeleteClient]
 
     def get_queryset(self):
         return ClientCustomer.objects.all()

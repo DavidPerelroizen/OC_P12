@@ -21,48 +21,17 @@ class ClientSerializer(ModelSerializer):
     company_name = CharField(required=True)
     date_created = DateTimeField(required=False)
     date_updated = DateTimeField(required=False)
-    sales_contact = serializers.UserSerializer(required=False)
-    sales_contact_name = CharField(required=False)
-
-    def validate_sales_contact_name(self, sales_contact_name):
-        try:
-            test_sales_contact_name = models.User.objects.get(username=sales_contact_name)
-            if test_sales_contact_name.groups.name != 'salesmen':
-                raise ValidationError('The selected sales contact does not belong to the salesmen group')
-            return sales_contact_name
-        except Exception:
-            raise ValidationError('The selected sales contact does not exist')
-
-    def create(self, validated_data):
-        client_customer = ClientCustomer()
-        client_customer.first_name = validated_data['first_name']
-        client_customer.last_name = validated_data['last_name']
-        client_customer.email = validated_data['email']
-        client_customer.phone = validated_data['phone']
-        client_customer.mobile = validated_data['mobile']
-        client_customer.company_name = validated_data['company_name']
-        client_customer.date_created = datetime.datetime.now()
-        client_customer.date_updated = datetime.datetime.now()
-        client_customer.sales_contact = models.User.objects.get(username=validated_data['sales_contact_name'])
-        client_customer.save()
-        return client_customer
-
-    def update(self, client_customer, validated_data):
-        client_customer.first_name = validated_data['first_name']
-        client_customer.last_name = validated_data['last_name']
-        client_customer.email = validated_data['email']
-        client_customer.phone = validated_data['phone']
-        client_customer.mobile = validated_data['mobile']
-        client_customer.company_name = validated_data['company_name']
-        client_customer.date_updated = datetime.datetime.now()
-        client_customer.sales_contact = models.User.objects.get(username=validated_data['sales_contact_name'])
-        client_customer.save()
-        return client_customer
 
     class Meta:
         model = ClientCustomer
         fields = ['first_name', 'last_name', 'email', 'phone', 'mobile', 'company_name', 'date_created',
-                  'date_updated', 'sales_contact', 'sales_contact_name']
+                  'date_updated', 'sales_contact']
+
+    def validate_sales_contact(self, sales_contact):
+        test_sales_contact = models.User.objects.get(id=sales_contact.id)
+        if test_sales_contact.description != f'{test_sales_contact.username}, group salesmen':
+            raise ValidationError('The selected sales contact does not belong to the salesmen group')
+        return sales_contact
 
 
 class EventSerializer(ModelSerializer):
@@ -76,6 +45,15 @@ class EventSerializer(ModelSerializer):
         model = Event
         fields = ['id', 'date_created', 'date_updated', 'event_status', 'attendees', 'event_date', 'notes',
                   'client_customer', 'support_contact']
+
+    def validate_support_contact(self, support_contact):
+        try:
+            test_support_contact = models.User.objects.get(id=support_contact)
+            if test_support_contact.description != f'{test_support_contact.username}, group supporters':
+                raise ValidationError('The selected sales contact does not belong to the supporters group')
+            return support_contact
+        except Exception:
+            raise ValidationError('The selected support contact does not exist')
 
 
 class ContractSerializer(ModelSerializer):

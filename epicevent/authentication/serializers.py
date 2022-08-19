@@ -1,8 +1,6 @@
-from rest_framework.serializers import ModelSerializer, CharField, EmailField, ValidationError
+from rest_framework.serializers import ModelSerializer, CharField, ValidationError
 from .models import User, groups_names_list
 from django.contrib.auth.models import Group
-from django.shortcuts import get_object_or_404
-from rest_framework import serializers
 
 
 class GroupSerializer(ModelSerializer):
@@ -41,8 +39,3 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'password', 'group', 'groups']
-
-
-
-
-

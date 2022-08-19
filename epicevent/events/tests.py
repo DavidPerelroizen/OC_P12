@@ -1,10 +1,6 @@
 import datetime
 
-from django.test import TestCase
-import pytest
 from .models import Contract, ClientCustomer, Event, EventStatus
-from django.urls import reverse, reverse_lazy
-from django.test import Client
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404

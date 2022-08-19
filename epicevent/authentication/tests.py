@@ -1,12 +1,8 @@
-from django.test import TestCase
 import pytest
-from .models import User, administration_group
-from django.urls import reverse, reverse_lazy
-from django.test import Client
+from .models import User
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
-from rest_framework.serializers import ValidationError
 
 # Create your tests here.
 
@@ -94,4 +90,3 @@ class TestUserManagement(APITestCase):
         form_data = {'username': 'david_test', 'password': 'davidou2410', 'group': 'administrative'}
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 400)
-

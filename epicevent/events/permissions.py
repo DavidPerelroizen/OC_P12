@@ -108,4 +108,3 @@ class EventManagementAuthorizations(BasePermission):
                 return False
         else:
             return False
-

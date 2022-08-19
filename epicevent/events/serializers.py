@@ -1,5 +1,3 @@
-import datetime
-
 from rest_framework.serializers import ModelSerializer, CharField, EmailField, IntegerField, DateTimeField, FloatField,\
     ValidationError, BooleanField
 from .models import ClientCustomer, Event, EventStatus, Contract

@@ -9,7 +9,7 @@ from authentication import serializers, models
 class EventStatusSerializer(ModelSerializer):
     class Meta:
         model = EventStatus
-        fields = ['name', 'date_created', 'date_updated', 'status_is_active']
+        fields = ['id', 'name', 'date_created', 'date_updated', 'status_is_active']
 
 
 class ClientSerializer(ModelSerializer):
@@ -24,7 +24,7 @@ class ClientSerializer(ModelSerializer):
 
     class Meta:
         model = ClientCustomer
-        fields = ['first_name', 'last_name', 'email', 'phone', 'mobile', 'company_name', 'date_created',
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'mobile', 'company_name', 'date_created',
                   'date_updated', 'sales_contact']
 
     def validate_sales_contact(self, sales_contact):
@@ -62,8 +62,8 @@ class ContractSerializer(ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = ['date_created', 'date_updated', 'amount', 'contract_status', 'payment_due_date', 'client_customer',
-                  'sales_contact']
+        fields = ['id', 'date_created', 'date_updated', 'amount', 'contract_status', 'payment_due_date',
+                  'client_customer', 'sales_contact']
 
     def validate_client_customer(self, client_customer):
         test_client_customer = ClientCustomer.objects.get(id=client_customer.id)

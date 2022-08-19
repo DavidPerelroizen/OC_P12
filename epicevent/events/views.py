@@ -12,7 +12,7 @@ class ContractManagement(ModelViewSet):
     serializer_class = ContractSerializer
     permission_classes = [CanUpdateDeleteContracts, CanCreateReadContracts]
     filterset_fields = ['id', 'date_created', 'date_updated', 'amount', 'contract_status', 'payment_due_date',
-                       'client_customer', 'sales_contact']
+                        'client_customer', 'sales_contact']
 
     def get_queryset(self):
         return Contract.objects.all()
@@ -32,7 +32,7 @@ class EventManagement(ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [CanCreateReadEvent, CanUpdateDeleteEvent]
     filterset_fields = ['id', 'date_created', 'date_updated', 'event_status', 'attendees', 'event_date', 'notes',
-                       'client_customer', 'support_contact']
+                        'client_customer', 'support_contact']
 
     def get_queryset(self):
         return Event.objects.all()

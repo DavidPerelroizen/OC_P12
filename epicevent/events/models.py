@@ -54,7 +54,8 @@ class Contract(models.Model):
     contract_status = models.BooleanField(default=False)  # Contract not signed = False, Contract signed = True
     payment_due_date = models.DateTimeField()
     client_customer = models.ForeignKey(ClientCustomer, on_delete=models.CASCADE, related_name='client_contract')
-    sales_contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sales_contract')
+    sales_contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                      related_name='sales_contract')
 
     def __str__(self):
         return f'Contract n°{self.id}, client company {self.client_customer}, contract status {self.contract_status}'

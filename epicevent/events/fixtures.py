@@ -12,4 +12,3 @@ def fixture_group_and_user_creation(group_name, user_name, pass_word):
     user.groups.add(user_group.id)
 
     return user
-

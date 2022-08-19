@@ -110,8 +110,8 @@ class TestClientManagement(APITestCase):
 
         # Step 2: ClientCustomer creation
         form_data = {'first_name': 'first_name_test1', 'last_name': 'last_name_test1',
-                            'email': 'email_test1@test.com', 'phone': '3333', 'mobile': '4444',
-                            'company_name': 'company_name_test1', 'sales_contact': user.id}
+                     'email': 'email_test1@test.com', 'phone': '3333', 'mobile': '4444',
+                     'company_name': 'company_name_test1', 'sales_contact': user.id}
         response = self.client.post(self.url, data=form_data)
 
         self.assertEqual(response.status_code, 201)
@@ -458,7 +458,6 @@ class TestContractManagement(APITestCase):
                             'company_name': 'company_name_test1', 'sales_contact': user_sales.id}
         response = self.client.post(self.url_client, data=form_data_client)
         self.assertEqual(response.status_code, 201)
-        client_created = ClientCustomer.objects.all()[0]
 
         # Step 3: create Contract
         form_data_contract = {'amount': 1000,

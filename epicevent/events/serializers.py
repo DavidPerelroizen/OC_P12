@@ -1,7 +1,7 @@
-from rest_framework.serializers import ModelSerializer, CharField, EmailField, IntegerField, DateTimeField, FloatField,\
-    ValidationError, BooleanField
+from rest_framework.serializers import ModelSerializer, CharField, EmailField, IntegerField,\
+    DateTimeField, FloatField, ValidationError, BooleanField
 from .models import ClientCustomer, Event, EventStatus, Contract
-from authentication import serializers, models
+from authentication import models
 
 
 class EventStatusSerializer(ModelSerializer):

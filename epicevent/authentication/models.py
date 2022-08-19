@@ -1,7 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser, Group
-from .permissions import CanManageUserCreation
-from events.permissions import CanUpdateDeleteContracts, CanCreateReadContracts
+
 
 # Create your models here.
 

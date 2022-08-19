@@ -2,21 +2,20 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import ClientCustomer
 
 
-class CanCreateReadContracts(BasePermission):
+class ContractsManagementAuthorizations(BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             if request.method in SAFE_METHODS:
                 return True
-            elif request.user.groups.first().name == 'salesmen' and request.method == 'POST':
+            elif request.user.groups.first().name == 'salesmen':
+                return True
+            elif request.user.groups.first().name == 'administrators' and request.method != 'POST':
                 return True
             else:
                 return False
         else:
             return False
-
-
-class CanUpdateDeleteContracts(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
@@ -30,21 +29,20 @@ class CanUpdateDeleteContracts(BasePermission):
             return False
 
 
-class CanCreateReadClient(BasePermission):
+class ClientsManagementAuthorizations(BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             if request.method in SAFE_METHODS:
                 return True
-            elif request.user.groups.first().name == 'salesmen' and request.method == 'POST':
+            elif request.user.groups.first().name == 'salesmen':
+                return True
+            elif request.user.groups.first().name == 'administrators' and request.method != 'POST':
                 return True
             else:
                 return False
         else:
             return False
-
-
-class CanUpdateDeleteClient(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
@@ -58,7 +56,7 @@ class CanUpdateDeleteClient(BasePermission):
             return False
 
 
-class CanCRUDEventStatus(BasePermission):
+class EventStatusManagementAuthorizations(BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
@@ -79,21 +77,20 @@ class CanCRUDEventStatus(BasePermission):
             return False
 
 
-class CanCreateReadEvent(BasePermission):
+class EventManagementAuthorizations(BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             if request.method in SAFE_METHODS:
                 return True
-            elif request.user.groups.first().name == 'salesmen' and request.method == 'POST':
+            elif request.user.groups.first().name == 'salesmen':
+                return True
+            elif request.user.groups.first().name == 'administrators' and request.method != 'POST':
                 return True
             else:
                 return False
         else:
             return False
-
-
-class CanUpdateDeleteEvent(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
@@ -111,3 +108,4 @@ class CanUpdateDeleteEvent(BasePermission):
                 return False
         else:
             return False
+

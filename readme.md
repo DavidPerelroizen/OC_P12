@@ -122,6 +122,7 @@ Permissions summary is displayed in the table below:
 | administrators      | CRUD | RUD | RUD | CRUD | RUD |
 | salesmen      | not allowed      |   CR(UD) | CR(UD) | not allowed      | CR(UD) |
 | supporters | not allowed      | R | R(UD) | not allowed      | R |
+
 *(UD) : the group member as access for update and delete actions only to the objects he is directly linked to*
 
 ### Run the server

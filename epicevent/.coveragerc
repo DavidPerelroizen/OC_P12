@@ -1,0 +1,2 @@
+[run]
+omit = events/tests.py, authentication/tests.py, events/migrations*, authentication/migrations*, manage.py, events/fixtures.py

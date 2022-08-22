@@ -100,7 +100,29 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 Once migrations are done, de-comment the lines from the step above and re-migrate.
+
 ## Usage
+
+### Create a superuser
+
+In order to access to django's administration panel a superuser profile must be created.
+Run the following commands in your terminal and follow the instructions: ``python manage.py createsuperuser``
+
+### User permissions
+
+Users are split into three groups:
+- administrators
+- salesmen
+- supporters
+
+Permissions summary is displayed in the table below:
+
+| Groups \ Objects        | User           | Contract  | Event | EventStatus | Client |
+| :-------------: |:-------------:| :-----:| :-------------:| :-------------:| :-------------:|
+| administrators      | CRUD | RUD | RUD | CRUD | RUD |
+| salesmen      | not allowed      |   CR(UD) | CR(UD) | not allowed      | CR(UD) |
+| supporters | not allowed      | R | R(UD) | not allowed      | R |
+*(UD) : the group member as access for update and delete actions only to the objects he is directly linked to*
 
 ### Run the server
 
@@ -109,17 +131,29 @@ Open your terminal and run the following command:
 python .\epicevent\manage.py runserver
 ```
 
+Use the following link to access to the admin panel: ``http://127.0.0.1:8000/admin/``
+Log in using your superuser credentials.
+
 ### Test the APIs
 
-Once the terminal command is executed, you can test the endpoints through different ways
+Once the terminal command is executed, you can test the endpoints.
 
-#### Use the Postman collection
-
-Follow the link below.
+Follow the link below to access the Postman collection.
 ```bash
-Link to postman collection:
+https://go.postman.co/workspace/New-Team-Workspace~23c58d19-ba3e-4393-97fe-d94ea4106519/collection/20673323-4517d629-0305-4bef-849a-502f221ffc17?action=share&creator=20673323
 ```
 
+#### Use Swagger for APIs
+
+Follow the link below for swagger API documentation.
+```bash
+http://127.0.0.1:8000/swagger/
+```
+
+Follow the link below for swagger API documentation with redoc layout.
+```bash
+http://127.0.0.1:8000/redoc/
+```
 
 ## Flake8 set-up and checks
 

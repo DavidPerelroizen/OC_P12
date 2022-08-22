@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser, Group
 # Create your models here.
 
 '''
-Instruction for readme: comment the three lines below before making the first migration.
+Instruction for readme: comment the four lines below before making the first migration.
 After the first migration, de-comment them and migrate.
 '''
 # Groups creation
